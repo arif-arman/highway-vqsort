@@ -306,8 +306,8 @@ namespace hwy {
 uint32_t first_sort_target = 0;  // none run yet
 namespace {
 HWY_BEFORE_TEST(BenchSort);
-HWY_EXPORT_AND_TEST_P(BenchSort, BenchAllPartition);
-HWY_EXPORT_AND_TEST_P(BenchSort, BenchAllBase);
+//HWY_EXPORT_AND_TEST_P(BenchSort, BenchAllPartition);
+//HWY_EXPORT_AND_TEST_P(BenchSort, BenchAllBase);
 HWY_EXPORT_AND_TEST_P(BenchSort, BenchAllSort);
 }  // namespace
 }  // namespace hwy

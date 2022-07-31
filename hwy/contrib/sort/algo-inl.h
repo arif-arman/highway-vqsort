@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cmath>  // std::abs
 #include <vector>
+#include <random>
 
 #include "hwy/base.h"
 #include "hwy/contrib/sort/vqsort.h"
@@ -95,10 +96,39 @@ HWY_POP_ATTRIBUTES
 
 namespace hwy {
 
-enum class Dist { kUniform8, kUniform16, kUniform32 };
+enum class Dist {
+       	kUniform8, 
+	kUniform16, 
+	kUniform32,
+	kUniform64,
+	kSame,
+	kSorted,
+	kRevSorted,
+	kAlmostSorted,
+	kPareto,
+	kParetoB2B,
+	kParetoShuff,
+	kFib,
+	kNormal,
+	kUniformDouble,
+	kWorstCaseQs
+};
 
 static inline std::vector<Dist> AllDist() {
-  return {/*Dist::kUniform8, Dist::kUniform16,*/ Dist::kUniform32};
+  return {/*Dist::kUniform8, Dist::kUniform16,*/ 
+    // Dist::kUniform32, 
+    Dist::kSame,
+    // Dist::kSorted, 
+    // Dist::kRevSorted, 
+    // Dist::kAlmostSorted
+    // Dist::kPareto,
+    // Dist::kParetoB2B,
+    // Dist::kParetoShuff
+    // Dist::kWorstCaseQs
+    // Dist::kFib,
+    // Dist::kNormal,
+    // Dist::kUniformDouble
+  };
 }
 
 static inline const char* DistName(Dist dist) {
@@ -109,6 +139,30 @@ static inline const char* DistName(Dist dist) {
       return "uniform16";
     case Dist::kUniform32:
       return "uniform32";
+    case Dist::kUniform64:
+      return "uniform64";
+    case Dist::kSame:
+      return "same";
+	  case Dist::kSorted:
+      return "sorted";
+	  case Dist::kRevSorted:
+      return "rev-sorted";
+	  case Dist::kAlmostSorted:
+      return "almost-sorted";
+	  case Dist::kPareto:
+      return "pareto";
+	  case Dist::kParetoB2B:
+      return "pareto-b2b";
+	  case Dist::kParetoShuff:
+      return "pareto-shuff";
+	  case Dist::kFib:
+      return "fib";
+	  case Dist::kNormal:
+      return "normal";
+	  case Dist::kUniformDouble:
+      return "unif-double";
+	  case Dist::kWorstCaseQs:
+      return "worst-case-qs";
   }
   return "unreachable";
 }
@@ -321,6 +375,137 @@ Vec<DU64> MaskForDist(DU64 du64, const Dist dist, size_t sizeof_t) {
 
 template <typename T>
 InputStats<T> GenerateInput(const Dist dist, T* v, size_t num) {
+#define ARIF_EDIT
+#define _min(a, b) ((a) <= (b) ? (a) : (b))
+  
+#ifdef ARIF_EDIT
+  InputStats<T> input_stats;
+
+  // ** NOTE: the following is only intended for uint32 and uint64
+
+  if (dist == Dist::kUniform32 || dist == Dist::kSorted || dist == Dist::kRevSorted || dist == Dist::kAlmostSorted) {
+    std::mt19937_64 g;
+    std::uniform_int_distribution<uint64_t> d;
+    for (size_t i = 0; i < num; ++i) 
+      v[i] = d(g);
+  
+    if (dist == Dist::kSorted) std::sort(v, v + num);
+    else if (dist == Dist::kRevSorted) std::sort(v, v + num, std::greater<T>());
+    else if (dist == Dist::kAlmostSorted) {
+      std::sort(v, v + num);
+      for (size_t i = 0; i < num; i += 7) 
+        v[i] = UINT64_MAX;
+    }
+  } 
+  else if (dist == Dist::kSame) {
+      std::mt19937_64 g;
+      std::uniform_int_distribution<uint64_t> d;
+      uint64_t x = d(g);
+      for (size_t i = 0; i < num; ++i) 
+        v[i] = x;
+  }
+  else if (dist == Dist::kPareto || dist == Dist::kParetoB2B || dist == Dist::kParetoShuff) {
+    uint64_t a = 6364136223846793005, c = 1442695040888963407, x = 1;
+    double ED = 20;
+    double alpha = 1, beta = 7;
+    uint64_t sum = 0, Items = 0, y = 889;
+    uint64_t maxF = 0;
+
+    for (size_t i = 0; i < num; ) {
+      x = x * a + c;
+      y = y * a + c;
+
+      // generate frequency from the Pareto distribution with alpha=1; otherwise, the generator gets slow
+      double u = (double)y / ((double)(1LLU << 63) * 2);			// uniform [0,1]
+      uint64_t f = _min(ceil(beta * (1 / (1 - u) - 1)), 10000);		// rounded-up Pareto
+
+      if (dist == Dist::kParetoB2B || dist == Dist::kParetoShuff) {
+        if (i + f < num) {
+          for (size_t j = 0; j < f; ++j) v[i + j] = x;
+          i += f;
+        }
+        else if (i + 10 >= num) {
+          while (i < num) v[i++] = x;
+        }
+      }
+      else if (dist == Dist::kPareto) v[i++] = f;
+    }
+
+    // shuffle
+    if (dist == Dist::kParetoShuff) {
+      std::random_device rd;
+      std::mt19937_64 g(rd());
+      std::shuffle(v, v + num, g);
+    }
+  }
+  else if (dist == Dist::kWorstCaseQs) {
+    uint32_t aLCG = 214013, cLCG = 2531011, x = 289;
+    for (size_t i = 0; i < num; i++) {
+      x = x * aLCG + cLCG;
+      double u = (double)x / 0xffffffff;
+      if (u < 0.92) v[i] = num;
+      else if (u < 0.94) v[i] = i;
+      else v[i] = num - i;
+    }
+  }
+  else if (dist == Dist::kFib) {
+    uint64_t a = 0, b = 1, c;
+    v[0] = 0; v[1] = 1;
+		uint64_t i = 2;	
+    while (i < num) {
+      c = a + b;
+      if (c < b) {	// overflow
+        a = 0; b = 1;
+        v[i++] = 0;
+        if (i < num) v[i++] = 1;
+      }
+      else {
+        a = b;
+        b = c;
+        v[i++] = b;
+      }
+    }
+  }
+  else if (dist == Dist::kNormal) {
+    if constexpr (std::is_same<T, uint32_t>::value) {
+      uint32_t miu = UINT32_MAX >> 1;
+			uint32_t sigma = (UINT32_MAX >> 1) / 3;
+			std::mt19937 gen;
+			std::normal_distribution<> dis(miu, sigma);
+			for (size_t i = 0; i < num; ++i)
+					v[i] = std::round(dis(gen));
+    }
+    else if constexpr (std::is_same<T, uint64_t>::value) {
+      uint64_t miu = UINT64_MAX >> 1;
+			uint64_t sigma = (UINT64_MAX >> 1) / 3;
+			std::mt19937_64 gen;
+			std::normal_distribution<> dis(miu, sigma);
+			for (size_t i = 0; i < num; ++i)
+					v[i] = std::round(dis(gen));
+    }
+  }
+  else if (dist == Dist::kUniformDouble) {
+    if constexpr (std::is_same<T, uint32_t>::value) {
+				float* p = (float*)v;
+				std::uniform_real_distribution<float> dis(0.0, FLT_MAX);
+				std::mt19937 gen;
+				for (size_t i = 0; i < num; ++i)
+					p[i] = dis(gen);
+			}
+			else if constexpr (std::is_same<T, uint64_t>::value) {
+				double* p = (double*)v;
+				std::uniform_real_distribution<double> dis(0.0, DBL_MAX);
+				std::mt19937_64 gen;
+				for (size_t i = 0; i < num; ++i)
+					p[i] = dis(gen);
+			}
+  }
+  else {
+    HWY_ABORT("Unsupported dist");
+    return input_stats;
+  }
+
+#else 
   SortTag<uint64_t> du64;
   using VU64 = Vec<decltype(du64)>;
   const size_t N64 = Lanes(du64);
@@ -349,8 +534,8 @@ InputStats<T> GenerateInput(const Dist dist, T* v, size_t num) {
     StoreU(bits, du64, buf.get());
     memcpy(v + i, buf.get(), (num - i) * sizeof(T));
   }
+#endif
 
-  InputStats<T> input_stats;
   for (size_t i = 0; i < num; ++i) {
     input_stats.Notify(v[i]);
   }

@@ -205,9 +205,10 @@ std::vector<Algo> AlgoForBench() {
 #if !SORT_100M
         // These are 10-20x slower, but that's OK for the default size when we
         // are not testing the parallel nor 100M modes.
-        Algo::kStd, Algo::kHeap,
+       // Algo::kStd,	// arif: moved below for testing
+       	Algo::kHeap,
 #endif
-
+	//Algo::kStd,
         Algo::kVQSort,  // only ~4x slower, but not required for Table 1a
 #endif
   };
@@ -267,6 +268,9 @@ HWY_NOINLINE void BenchAllSort() {
   // Only enable EMU128 on x86 - it's slow on emulators.
   if (!HWY_ARCH_X86 && (HWY_TARGET == HWY_EMU128)) return;
 
+  // arif: disable EMU128
+  if (HWY_TARGET == HWY_EMU128) return;
+
   constexpr size_t K = 1000;
   constexpr size_t M = K * K;
   (void)K;
@@ -278,18 +282,18 @@ HWY_NOINLINE void BenchAllSort() {
         1 * M,
 #endif
        }) {
-    // BenchSort<TraitsLane<OrderAscending<float>>>(num_keys);
+    //BenchSort<TraitsLane<OrderAscending<float>>>(num_keys);
     // BenchSort<TraitsLane<OrderDescending<double>>>(num_keys);
     // BenchSort<TraitsLane<OrderAscending<int16_t>>>(num_keys);
     // BenchSort<TraitsLane<OrderDescending<int32_t>>>(num_keys);
     // BenchSort<TraitsLane<OrderAscending<int64_t>>>(num_keys);
     // BenchSort<TraitsLane<OrderDescending<uint16_t>>>(num_keys);
-    // BenchSort<TraitsLane<OrderDescending<uint32_t>>>(num_keys);
-    BenchSort<TraitsLane<OrderAscending<uint64_t>>>(num_keys);
+    BenchSort<TraitsLane<OrderDescending<uint32_t>>>(num_keys);
+    //BenchSort<TraitsLane<OrderAscending<uint64_t>>>(num_keys);
 
 #if !HAVE_VXSORT && VQSORT_ENABLED
-    BenchSort<Traits128<OrderAscending128>>(num_keys);
-    BenchSort<Traits128<OrderAscendingKV128>>(num_keys);
+//    BenchSort<Traits128<OrderAscending128>>(num_keys);
+//    BenchSort<Traits128<OrderAscendingKV128>>(num_keys);
 #endif
   }
 }

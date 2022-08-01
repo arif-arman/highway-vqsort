@@ -226,7 +226,7 @@ HWY_NOINLINE void BenchSort(size_t num_keys) {
   const size_t num_lanes = num_keys * st.LanesPerKey();
   auto aligned = hwy::AllocateAligned<LaneType>(num_lanes);
 
-  const size_t reps = num_keys > 1000 * 1000 ? 10 : 30;
+  const size_t reps = num_keys > 1000 * 1000 ? 1 : 30;
 
   for (Algo algo : AlgoForBench()) {
     // Other algorithms don't depend on the vector instructions, so only run

@@ -116,18 +116,18 @@ enum class Dist {
 
 static inline std::vector<Dist> AllDist() {
   return {/*Dist::kUniform8, Dist::kUniform16,*/ 
-    // Dist::kUniform32, 
-    Dist::kSame,
+    Dist::kUniform32, 
+    // Dist::kSame,
     // Dist::kSorted, 
     // Dist::kRevSorted, 
-    // Dist::kAlmostSorted
+    // Dist::kAlmostSorted,
     // Dist::kPareto,
-    // Dist::kParetoB2B,
-    // Dist::kParetoShuff
-    // Dist::kWorstCaseQs
+    Dist::kParetoB2B,
+    // Dist::kParetoShuff,
     // Dist::kFib,
     // Dist::kNormal,
-    // Dist::kUniformDouble
+    // Dist::kUniformDouble,
+    Dist::kWorstCaseQs,
   };
 }
 
@@ -444,7 +444,7 @@ InputStats<T> GenerateInput(const Dist dist, T* v, size_t num) {
       x = x * aLCG + cLCG;
       double u = (double)x / 0xffffffff;
       if (u < 0.92) v[i] = num;
-      else if (u < 0.94) v[i] = i;
+      else if (u < 0.94) v[i] = i * i;
       else v[i] = num - i;
     }
   }

@@ -193,8 +193,9 @@ void BenchParallel() {
   ThreadPool pool;
   const size_t NT = pool.NumThreads();
 
-  detail::SharedTraits<detail::TraitsLane<detail::OrderAscending<int64_t>>> st;
-  using KeyType = typename decltype(st)::KeyType;
+  //detail::SharedTraits<detail::TraitsLane<detail::OrderAscending<int64_t>>> st;
+  detail::SharedTraits<detail::TraitsLane<detail::OrderAscending<uint32_t>>> st;
+  using KeyType = uint32_t; // typename decltype(st)::KeyType;
   const size_t num_keys = size_t{100} * 1000 * 1000;
 
 #if HAVE_IPS4O

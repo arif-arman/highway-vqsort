@@ -116,13 +116,13 @@ enum class Dist {
 
 static inline std::vector<Dist> AllDist() {
   return {/*Dist::kUniform8, Dist::kUniform16,*/ 
-    Dist::kUniform32, 
+    // Dist::kUniform32, 
     // Dist::kSame,
     // Dist::kSorted, 
     // Dist::kRevSorted, 
     // Dist::kAlmostSorted,
     // Dist::kPareto,
-    Dist::kParetoB2B,
+    // Dist::kParetoB2B,
     // Dist::kParetoShuff,
     // Dist::kFib,
     // Dist::kNormal,
@@ -440,13 +440,32 @@ InputStats<T> GenerateInput(const Dist dist, T* v, size_t num) {
   }
   else if (dist == Dist::kWorstCaseQs) {
     uint32_t aLCG = 214013, cLCG = 2531011, x = 289;
+    uint32_t k = UINT32_MAX;
     for (size_t i = 0; i < num; i++) {
-      x = x * aLCG + cLCG;
-      double u = (double)x / 0xffffffff;
-      if (u < 0.92) v[i] = num;
-      else if (u < 0.94) v[i] = i * i;
-      else v[i] = num - i;
+      //x = x * aLCG + cLCG;
+      //double u = (double)x / 0xffffffff;
+      //if (u < 0.92) v[i] = num;
+      //else if (u < 0.94) v[i] = i * i;
+      //else v[i] = num - i;
+      //else v[i] = k--;
+      // else v[i] = i;
     }
+    uint32_t i = 0;
+    k = num;
+    for (; i < 60; ++i) v[i] = i / 2;
+    for (; i < num * 0.7; ++i) v[i] = num;
+    for (; i < num; ++i) v[i] = --k;
+    //for (; i < num * 0.92; ++i) v[i] = num;
+    //for (; i < num; ++i) v[i] = i;
+
+    //printf("Input shuffling\n");
+    std::random_device rd;
+		std::mt19937 g(rd());
+    std::shuffle(v, v + num, g);
+
+    //for (size_t i = 0; i < 100; ++i) printf("%lu ", v[i]); printf("\n");
+    //printf("%lu\n", k);
+
   }
   else if (dist == Dist::kFib) {
     uint64_t a = 0, b = 1, c;

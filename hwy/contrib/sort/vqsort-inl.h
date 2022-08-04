@@ -624,11 +624,16 @@ HWY_NOINLINE void ScanMinMax(D d, Traits st, const T* HWY_RESTRICT keys,
   last = st.LastOfLanes(d, last, buf);
 }
 
+static int printed = 0;
+
 template <class D, class Traits, typename T>
 void Recurse(D d, Traits st, T* HWY_RESTRICT keys, T* HWY_RESTRICT keys_end,
              const size_t begin, const size_t end, const Vec<D> pivot,
              T* HWY_RESTRICT buf, Generator& rng, size_t remaining_levels) {
-  //max_depth = std::max(max_depth, depth);
+
+  //if (printed++ > 10) return;
+
+  max_depth = std::max(max_depth, depth);  
 
   HWY_DASSERT(begin + 1 < end);
   const size_t num = end - begin;  // >= 2
@@ -636,7 +641,8 @@ void Recurse(D d, Traits st, T* HWY_RESTRICT keys, T* HWY_RESTRICT keys_end,
   // Too many degenerate partitions. This is extremely unlikely to happen
   // because we select pivots from large (though still O(1)) samples.
   if (HWY_UNLIKELY(remaining_levels == 0)) {
-    //printf("Heapsort with %llu\n", num);
+    for (size_t i = 0; i < depth; ++i) printf("*"); printf(" ");
+    printf("Heapsort with %llu\n", num);
     //heap_sort += num;
     HeapSort(st, keys + begin, num);  // Slow but N*logN.
     //dist[depth]++;
@@ -648,7 +654,7 @@ void Recurse(D d, Traits st, T* HWY_RESTRICT keys, T* HWY_RESTRICT keys_end,
   const ptrdiff_t base_case_num =
       static_cast<ptrdiff_t>(Constants::BaseCaseNum(Lanes(d)));
   const size_t bound = Partition(d, st, keys, begin, end, pivot, buf);
-  count_at_depth[depth] += num;
+  //count_at_depth[depth] += num;
 
   const ptrdiff_t num_left =
       static_cast<ptrdiff_t>(bound) - static_cast<ptrdiff_t>(begin);
@@ -657,8 +663,13 @@ void Recurse(D d, Traits st, T* HWY_RESTRICT keys, T* HWY_RESTRICT keys_end,
 
   bool end_rec = true;
 
+  //printf("Partition: [%lu %lu %lu]\n", begin, bound, end); 
+  //for(size_t i = begin; i < std::min(begin + 20, bound); ++i) printf("%lu ", keys[i]); printf("\n");
+  //for(size_t i = bound; i < std::min(bound + 20, end); ++i) printf("%lu ", keys[i]); printf("\n");
+
   // Check for degenerate partitions (i.e. Partition did not move any keys):
   if (HWY_UNLIKELY(num_right == 0)) {
+    //printf("Right partition empty\n");
     // Because the pivot is one of the keys, it must have been equal to the
     // first or last key in sort order. Scan for the actual min/max:
     // passing the current pivot as the new bound is insufficient because one of
@@ -667,39 +678,52 @@ void Recurse(D d, Traits st, T* HWY_RESTRICT keys, T* HWY_RESTRICT keys_end,
     ScanMinMax(d, st, keys + begin, num, buf, first, last);
     //count_at_depth[depth] += num;
     if (AllTrue(d, Eq(first, last))) {
+     //for (size_t i = 0; i < depth; ++i) printf("*"); printf(" ");
+     //printf("[L] Depth: %d -- All same %lu\n", depth, num_left);
       //dist[depth]++;
       return;
     }
 
     // Separate recursion to make sure that we don't pick `last` as the
     // pivot - that would again lead to a degenerate partition.
-    //++depth;
+    //for (size_t i = 0; i < depth; ++i) printf("*"); printf(" ");
+    //printf("[L] Recurse depth: %d, left: %d, right: %d\n", depth, begin, end);
+    ++depth;
     Recurse(d, st, keys, keys_end, begin, end, first, buf, rng,
             remaining_levels - 1);
-    //--depth;
+    --depth;
     return;
   }
 
   if (HWY_UNLIKELY(num_left <= base_case_num)) {
     BaseCase(d, st, keys + begin, keys_end, static_cast<size_t>(num_left), buf);
     //dist[depth]++;
+    //for (size_t i = 0; i < depth; ++i) printf("*"); printf(" ");
+    //printf("[L] Depth: %d -- Base case %lu\n", depth, num_left);
+    
   } else {
     const Vec<D> next_pivot = ChoosePivot(d, st, keys, begin, bound, buf, rng);
-    //++depth;
+    //for (size_t i = 0; i < depth; ++i) printf("*"); printf(" ");
+   // printf("[L] Recurse depth: %d, left: %d, right: %d\n", depth, begin, bound);
+    ++depth;
     Recurse(d, st, keys, keys_end, begin, bound, next_pivot, buf, rng,
             remaining_levels - 1);
-    //--depth;
+    --depth;
   }
   if (HWY_UNLIKELY(num_right <= base_case_num)) {
     BaseCase(d, st, keys + bound, keys_end, static_cast<size_t>(num_right),
              buf);
     //dist[depth]++;
+    //for (size_t i = 0; i < depth; ++i) printf("*"); printf(" ");
+    //printf("[R] Depth: %d -- Base case %lu\n", depth, num_right);
   } else {
     const Vec<D> next_pivot = ChoosePivot(d, st, keys, bound, end, buf, rng);
-    //++depth;
+    //for (size_t i = 0; i < depth; ++i) printf("*"); printf(" ");
+    //printf("[R] Recurse depth: %d, left: %d, right: %d\n", depth, bound, end);
+    ++depth;    
     Recurse(d, st, keys, keys_end, bound, end, next_pivot, buf, rng,
             remaining_levels - 1);
-    //--depth;
+    --depth;
   }
 
 }
@@ -761,8 +785,8 @@ void Sort(D d, Traits st, T* HWY_RESTRICT keys, size_t num,
     // added by Arif 
     // memset(detail::dist, 0, sizeof(uint64_t) * 1025);
     // memset(detail::count_at_depth, 0, sizeof(uint64_t) * 1025);
-    // detail::max_depth = -1;
-    // detail::depth = 0;
+    detail::max_depth = -1;
+    detail::depth = 1;
     // detail::heap_sort = 0;
       
 #if VQSORT_ENABLED || HWY_IDE
@@ -800,7 +824,7 @@ void Sort(D d, Traits st, T* HWY_RESTRICT keys, size_t num,
   return detail::HeapSort(st, keys, num);
 #endif  // VQSORT_ENABLED
 
-  //printf("Max depth: %d\n", detail::max_depth);
+  printf("Max depth: %d\n", detail::max_depth);
   //for (int i = 0; i <= detail::max_depth; ++i) printf("%d: %llu\n", i, detail::dist[i]);
   //for (int i = 0; i <= detail::max_depth; ++i) printf("%d: %llu\n", i, detail::count_at_depth[i]);
   //printf("Sorted with heapsort: %llu\n", detail::heap_sort);

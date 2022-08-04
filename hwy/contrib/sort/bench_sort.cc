@@ -226,7 +226,7 @@ HWY_NOINLINE void BenchSort(size_t num_keys) {
   const size_t num_lanes = num_keys * st.LanesPerKey();
   auto aligned = hwy::AllocateAligned<LaneType>(num_lanes);
 
-  const size_t reps = num_keys > 1000 * 1000 ? 1 : 30;
+  const size_t reps = num_keys > 1000 * 1000 ? 3 : 30;
 
   for (Algo algo : AlgoForBench()) {
     // Other algorithms don't depend on the vector instructions, so only run
@@ -288,8 +288,10 @@ HWY_NOINLINE void BenchAllSort() {
     // BenchSort<TraitsLane<OrderDescending<int32_t>>>(num_keys);
     // BenchSort<TraitsLane<OrderAscending<int64_t>>>(num_keys);
     // BenchSort<TraitsLane<OrderDescending<uint16_t>>>(num_keys);
-    BenchSort<TraitsLane<OrderDescending<uint32_t>>>(num_keys);
-    //BenchSort<TraitsLane<OrderAscending<uint64_t>>>(num_keys);
+    
+    
+    BenchSort<TraitsLane<OrderAscending<uint32_t>>>(num_keys);
+    //BenchSort<TraitsLane<OrderDescending<uint32_t>>>(num_keys);
 
 #if !HAVE_VXSORT && VQSORT_ENABLED
 //    BenchSort<Traits128<OrderAscending128>>(num_keys);

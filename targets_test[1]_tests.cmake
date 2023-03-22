@@ -1,0 +1,5 @@
+add_test( HwyTargetsTest.ChosenTargetOrderTest /home/arif/Research/highway-vqsort/tests/targets_test [==[--gtest_filter=HwyTargetsTest.ChosenTargetOrderTest]==] --gtest_also_run_disabled_tests)
+set_tests_properties( HwyTargetsTest.ChosenTargetOrderTest PROPERTIES WORKING_DIRECTORY /home/arif/Research/highway-vqsort)
+add_test( HwyTargetsTest.DisabledTargetsTest /home/arif/Research/highway-vqsort/tests/targets_test [==[--gtest_filter=HwyTargetsTest.DisabledTargetsTest]==] --gtest_also_run_disabled_tests)
+set_tests_properties( HwyTargetsTest.DisabledTargetsTest PROPERTIES WORKING_DIRECTORY /home/arif/Research/highway-vqsort)
+set( targets_test_TESTS HwyTargetsTest.ChosenTargetOrderTest HwyTargetsTest.DisabledTargetsTest)

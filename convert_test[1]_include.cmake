@@ -1,0 +1,5 @@
+if(EXISTS "/home/arif/Research/highway-vqsort/convert_test[1]_tests.cmake")
+  include("/home/arif/Research/highway-vqsort/convert_test[1]_tests.cmake")
+else()
+  add_test(convert_test_NOT_BUILT convert_test_NOT_BUILT)
+endif()

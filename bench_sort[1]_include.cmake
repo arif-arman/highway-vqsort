@@ -1,0 +1,5 @@
+if(EXISTS "/home/arif/Research/highway-vqsort/bench_sort[1]_tests.cmake")
+  include("/home/arif/Research/highway-vqsort/bench_sort[1]_tests.cmake")
+else()
+  add_test(bench_sort_NOT_BUILT bench_sort_NOT_BUILT)
+endif()

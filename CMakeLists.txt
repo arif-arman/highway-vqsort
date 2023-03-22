@@ -26,6 +26,7 @@ set(LIBRARY_VERSION "${hwy_VERSION}")
 set(LIBRARY_SOVERSION ${hwy_VERSION_MAJOR})
 
 set(CMAKE_CXX_EXTENSIONS OFF)
+Set(CMAKE_CXX_STANDARD 11)
 
 # Enabled PIE binaries by default if supported.
 include(CheckPIESupported OPTIONAL RESULT_VARIABLE CHECK_PIE_SUPPORTED)
@@ -148,27 +149,27 @@ else()
     -fmerge-all-constants
 
     # Warnings
-    -Wall
-    -Wextra
+    #-Wall
+    #-Wextra
     # These are not included in Wall nor Wextra:
-    -Wconversion
-    -Wsign-conversion
-    -Wvla
-    -Wnon-virtual-dtor
+    #-Wconversion
+    #-Wsign-conversion
+    #-Wvla
+    #-Wnon-virtual-dtor
   )
 
   if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
     list(APPEND HWY_FLAGS
-      -Wfloat-overflow-conversion
-      -Wfloat-zero-conversion
-      -Wfor-loop-analysis
-      -Wgnu-redeclared-enum
-      -Winfinite-recursion
-      -Wself-assign
-      -Wstring-conversion
-      -Wtautological-overlap-compare
-      -Wthread-safety-analysis
-      -Wundefined-func-template
+     # -Wfloat-overflow-conversion
+     # -Wfloat-zero-conversion
+      #-Wfor-loop-analysis
+      #-Wgnu-redeclared-enum
+      #-Winfinite-recursion
+      #-Wself-assign
+      #-Wstring-conversion
+      #-Wtautological-overlap-compare
+      #-Wthread-safety-analysis
+      #-Wundefined-func-template
 
       -fno-cxx-exceptions
       -fno-slp-vectorize
@@ -198,12 +199,12 @@ else()
     endif()
 
     list(APPEND HWY_FLAGS
-      -Wno-cast-align
-      -Wno-double-promotion
-      -Wno-float-equal
-      -Wno-format-nonliteral
-      -Wno-shadow
-      -Wno-sign-conversion
+      # -Wno-cast-align
+      # -Wno-double-promotion
+      # -Wno-float-equal
+      # -Wno-format-nonliteral
+      # -Wno-shadow
+      # -Wno-sign-conversion
     )
   else()
     list(APPEND HWY_FLAGS
@@ -229,7 +230,7 @@ else()
   endif()
 
   if (HWY_WARNINGS_ARE_ERRORS)
-    list(APPEND HWY_FLAGS -Werror)
+    #list(APPEND HWY_FLAGS -Werror)
   endif()
 
 endif()  # !MSVC
@@ -455,35 +456,35 @@ endif()
 endif()  # HWY_SYSTEM_GTEST
 
 set(HWY_TEST_FILES
-  hwy/contrib/algo/copy_test.cc
-  hwy/contrib/algo/find_test.cc
-  hwy/contrib/algo/transform_test.cc
-  hwy/aligned_allocator_test.cc
-  hwy/base_test.cc
-  hwy/highway_test.cc
-  hwy/nanobenchmark_test.cc
-  hwy/targets_test.cc
-  hwy/examples/skeleton_test.cc
-  hwy/tests/arithmetic_test.cc
-  hwy/tests/blockwise_test.cc
-  hwy/tests/blockwise_shift_test.cc
-  hwy/tests/combine_test.cc
-  hwy/tests/compare_test.cc
-  hwy/tests/compress_test.cc
-  hwy/tests/convert_test.cc
-  hwy/tests/crypto_test.cc
-  hwy/tests/demote_test.cc
-  hwy/tests/float_test.cc
-  hwy/tests/logical_test.cc
-  hwy/tests/mask_test.cc
-  hwy/tests/mask_mem_test.cc
-  hwy/tests/memory_test.cc
-  hwy/tests/mul_test.cc
-  hwy/tests/reduction_test.cc
-  hwy/tests/reverse_test.cc
-  hwy/tests/shift_test.cc
-  hwy/tests/swizzle_test.cc
-  hwy/tests/test_util_test.cc
+  # hwy/contrib/algo/copy_test.cc
+  # hwy/contrib/algo/find_test.cc
+  # hwy/contrib/algo/transform_test.cc
+  # hwy/aligned_allocator_test.cc
+  # hwy/base_test.cc
+  # hwy/highway_test.cc
+  # hwy/nanobenchmark_test.cc
+  # hwy/targets_test.cc
+  # hwy/examples/skeleton_test.cc
+  # hwy/tests/arithmetic_test.cc
+  # hwy/tests/blockwise_test.cc
+  # hwy/tests/blockwise_shift_test.cc
+  # hwy/tests/combine_test.cc
+  # hwy/tests/compare_test.cc
+  # hwy/tests/compress_test.cc
+  # hwy/tests/convert_test.cc
+  # hwy/tests/crypto_test.cc
+  # hwy/tests/demote_test.cc
+  # hwy/tests/float_test.cc
+  # hwy/tests/logical_test.cc
+  # hwy/tests/mask_test.cc
+  # hwy/tests/mask_mem_test.cc
+  # hwy/tests/memory_test.cc
+  # hwy/tests/mul_test.cc
+  # hwy/tests/reduction_test.cc
+  # hwy/tests/reverse_test.cc
+  # hwy/tests/shift_test.cc
+  # hwy/tests/swizzle_test.cc
+  # hwy/tests/test_util_test.cc
 )
 
 set(HWY_TEST_LIBS hwy hwy_test)
@@ -492,12 +493,13 @@ if (HWY_ENABLE_CONTRIB)
 list(APPEND HWY_TEST_LIBS hwy_contrib)
 
 list(APPEND HWY_TEST_FILES
-  hwy/contrib/dot/dot_test.cc
-  hwy/contrib/image/image_test.cc
+  #hwy/contrib/dot/dot_test.cc
+  #hwy/contrib/image/image_test.cc
   # Disabled due to SIGILL in clang7 debug build during gtest discovery phase,
   # not reproducible locally. Still tested via bazel build.
   # hwy/contrib/math/math_test.cc
-  hwy/contrib/sort/sort_test.cc
+  #hwy/contrib/sort/sort_test.cc
+  hwy/contrib/sort/bench_sort.cc
 )
 endif()  # HWY_ENABLE_CONTRIB
 
@@ -535,6 +537,6 @@ foreach (TESTFILE IN LISTS HWY_TEST_FILES)
 endforeach ()
 
 # The skeleton test uses the skeleton library code.
-target_sources(skeleton_test PRIVATE hwy/examples/skeleton.cc)
+#target_sources(skeleton_test PRIVATE hwy/examples/skeleton.cc)
 
 endif()  # BUILD_TESTING

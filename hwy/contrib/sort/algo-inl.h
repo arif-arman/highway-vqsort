@@ -116,7 +116,7 @@ enum class Dist {
 
 static inline std::vector<Dist> AllDist() {
   return {/*Dist::kUniform8, Dist::kUniform16,*/ 
-    // Dist::kUniform32, 
+     Dist::kUniform32, 
     // Dist::kSame,
     // Dist::kSorted, 
     // Dist::kRevSorted, 
@@ -127,7 +127,7 @@ static inline std::vector<Dist> AllDist() {
     // Dist::kFib,
     // Dist::kNormal,
     // Dist::kUniformDouble,
-    Dist::kWorstCaseQs,
+    // Dist::kWorstCaseQs,
   };
 }
 

@@ -1,0 +1,5 @@
+if(EXISTS "/home/arif/Research/highway-vqsort/targets_test[1]_tests.cmake")
+  include("/home/arif/Research/highway-vqsort/targets_test[1]_tests.cmake")
+else()
+  add_test(targets_test_NOT_BUILT targets_test_NOT_BUILT)
+endif()

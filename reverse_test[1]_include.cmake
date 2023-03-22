@@ -1,0 +1,5 @@
+if(EXISTS "/home/arif/Research/highway-vqsort/reverse_test[1]_tests.cmake")
+  include("/home/arif/Research/highway-vqsort/reverse_test[1]_tests.cmake")
+else()
+  add_test(reverse_test_NOT_BUILT reverse_test_NOT_BUILT)
+endif()

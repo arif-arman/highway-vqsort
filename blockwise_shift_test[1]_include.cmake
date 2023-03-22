@@ -1,0 +1,5 @@
+if(EXISTS "/home/arif/Research/highway-vqsort/blockwise_shift_test[1]_tests.cmake")
+  include("/home/arif/Research/highway-vqsort/blockwise_shift_test[1]_tests.cmake")
+else()
+  add_test(blockwise_shift_test_NOT_BUILT blockwise_shift_test_NOT_BUILT)
+endif()

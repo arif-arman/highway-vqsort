@@ -1,0 +1,5 @@
+if(EXISTS "/home/arif/Research/highway-vqsort/swizzle_test[1]_tests.cmake")
+  include("/home/arif/Research/highway-vqsort/swizzle_test[1]_tests.cmake")
+else()
+  add_test(swizzle_test_NOT_BUILT swizzle_test_NOT_BUILT)
+endif()

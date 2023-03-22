@@ -1,0 +1,1 @@
+/usr/bin/c++  -O2 -g -DNDEBUG   CMakeFiles/float_test.dir/hwy/tests/float_test.cc.o  -o tests/float_test libhwy.a libhwy_test.a libhwy_contrib.a lib/libgtest.a lib/libgtest_main.a libhwy.a lib/libgtest.a -lpthread 

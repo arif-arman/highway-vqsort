@@ -1,0 +1,5 @@
+if(EXISTS "/home/arif/Research/highway-vqsort/dot_test[1]_tests.cmake")
+  include("/home/arif/Research/highway-vqsort/dot_test[1]_tests.cmake")
+else()
+  add_test(dot_test_NOT_BUILT dot_test_NOT_BUILT)
+endif()

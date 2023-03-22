@@ -1,0 +1,5 @@
+if(EXISTS "/home/arif/Research/highway-vqsort/arithmetic_test[1]_tests.cmake")
+  include("/home/arif/Research/highway-vqsort/arithmetic_test[1]_tests.cmake")
+else()
+  add_test(arithmetic_test_NOT_BUILT arithmetic_test_NOT_BUILT)
+endif()

@@ -261,15 +261,15 @@ HWY_NOINLINE void BenchSort(size_t num_keys) {
 
 HWY_NOINLINE void BenchAllSort() {
   // Not interested in benchmark results for these targets
-  if (HWY_TARGET == HWY_SSSE3 || HWY_TARGET == HWY_SSE4 ||
-      HWY_TARGET == HWY_NEON) {
-    return;
-  }
+  // if (HWY_TARGET == HWY_SSSE3 || HWY_TARGET == HWY_SSE4 ||
+  //     HWY_TARGET == HWY_NEON) {
+  //   return;
+  // }
   // Only enable EMU128 on x86 - it's slow on emulators.
   if (!HWY_ARCH_X86 && (HWY_TARGET == HWY_EMU128)) return;
 
-  // arif: disable EMU128
-  if (HWY_TARGET == HWY_EMU128) return;
+  // arif: disable EMU128 and NEON
+  if (HWY_TARGET == HWY_EMU128 || HWY_TARGET == HWY_NEON) return;
 
   constexpr size_t K = 1000;
   constexpr size_t M = K * K;
@@ -289,7 +289,7 @@ HWY_NOINLINE void BenchAllSort() {
     // BenchSort<TraitsLane<OrderAscending<int64_t>>>(num_keys);
     // BenchSort<TraitsLane<OrderDescending<uint16_t>>>(num_keys);
     
-    
+    printf("n: %llu\n", num_keys);
     BenchSort<TraitsLane<OrderAscending<uint32_t>>>(num_keys);
     //BenchSort<TraitsLane<OrderDescending<uint32_t>>>(num_keys);
 

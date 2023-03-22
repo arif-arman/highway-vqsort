@@ -1,0 +1,1 @@
+/usr/bin/c++  -O2 -g -DNDEBUG   CMakeFiles/image_test.dir/hwy/contrib/image/image_test.cc.o  -o tests/image_test libhwy.a libhwy_test.a libhwy_contrib.a lib/libgtest.a lib/libgtest_main.a libhwy.a lib/libgtest.a -lpthread 

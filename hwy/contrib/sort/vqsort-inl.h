@@ -824,7 +824,7 @@ void Sort(D d, Traits st, T* HWY_RESTRICT keys, size_t num,
   return detail::HeapSort(st, keys, num);
 #endif  // VQSORT_ENABLED
 
-  printf("Max depth: %d\n", detail::max_depth);
+  // printf("Max depth: %d\n", detail::max_depth);
   //for (int i = 0; i <= detail::max_depth; ++i) printf("%d: %llu\n", i, detail::dist[i]);
   //for (int i = 0; i <= detail::max_depth; ++i) printf("%d: %llu\n", i, detail::count_at_depth[i]);
   //printf("Sorted with heapsort: %llu\n", detail::heap_sort);

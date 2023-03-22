@@ -1,0 +1,5 @@
+if(EXISTS "/home/arif/Research/highway-vqsort/skeleton_test[1]_tests.cmake")
+  include("/home/arif/Research/highway-vqsort/skeleton_test[1]_tests.cmake")
+else()
+  add_test(skeleton_test_NOT_BUILT skeleton_test_NOT_BUILT)
+endif()

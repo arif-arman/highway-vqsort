@@ -1,0 +1,5 @@
+if(EXISTS "/home/arif/Research/highway-vqsort/nanobenchmark_test[1]_tests.cmake")
+  include("/home/arif/Research/highway-vqsort/nanobenchmark_test[1]_tests.cmake")
+else()
+  add_test(nanobenchmark_test_NOT_BUILT nanobenchmark_test_NOT_BUILT)
+endif()

@@ -1,0 +1,1 @@
+/usr/bin/c++  -O2 -g -DNDEBUG   CMakeFiles/hwy_list_targets.dir/hwy/tests/list_targets.cc.o  -o hwy_list_targets libhwy.a 

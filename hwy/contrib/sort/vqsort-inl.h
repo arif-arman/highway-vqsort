@@ -641,8 +641,8 @@ void Recurse(D d, Traits st, T* HWY_RESTRICT keys, T* HWY_RESTRICT keys_end,
   // Too many degenerate partitions. This is extremely unlikely to happen
   // because we select pivots from large (though still O(1)) samples.
   if (HWY_UNLIKELY(remaining_levels == 0)) {
-    for (size_t i = 0; i < depth; ++i) printf("*"); printf(" ");
-    printf("Heapsort with %llu\n", num);
+    //for (size_t i = 0; i < depth; ++i) printf("*"); printf(" ");
+    //printf("Heapsort with %llu\n", num);
     //heap_sort += num;
     HeapSort(st, keys + begin, num);  // Slow but N*logN.
     //dist[depth]++;
@@ -786,7 +786,7 @@ void Sort(D d, Traits st, T* HWY_RESTRICT keys, size_t num,
     // memset(detail::dist, 0, sizeof(uint64_t) * 1025);
     // memset(detail::count_at_depth, 0, sizeof(uint64_t) * 1025);
     detail::max_depth = -1;
-    detail::depth = 1;
+    detail::depth = 0;
     // detail::heap_sort = 0;
       
 #if VQSORT_ENABLED || HWY_IDE

@@ -344,4 +344,13 @@ ASALocalRun/
 healthchecksdb
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
-MigrationBackup/
+MigrationBackup/./libhwy_contrib.a
+./CMakeFiles/arithmetic_test.dir/hwy/tests/arithmetic_test.cc.o
+./CMakeFiles/blockwise_shift_test.dir/hwy/tests/blockwise_shift_test.cc.o
+./CMakeFiles/shift_test.dir/hwy/tests/shift_test.cc.o
+./CMakeFiles/memory_test.dir/hwy/tests/memory_test.cc.o
+./CMakeFiles/blockwise_test.dir/hwy/tests/blockwise_test.cc.o
+./CMakeFiles/logical_test.dir/hwy/tests/logical_test.cc.o
+./tests/memory_test
+./tests/logical_test
+./tests/arithmetic_test
